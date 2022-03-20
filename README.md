@@ -1,21 +1,36 @@
-# piccolo_project
+# FastAPI + Piccolo
 
-## Setup
+Tried out Piccolo, since it lets you do the schema and models in one step, and simplifies a lot of the CRUD operations. The migrations and admin are also kind of nice, haven't tried the tests yet. Let's talk soon and see what you think. 
 
-### Install requirements
+Didn't get Poetry working yet...
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Getting started guide
+Run with:
 
 ```bash
 python main.py
 ```
 
-### Running tests
+and head to the /docs.
+
+I used Postgres since it allows for automatic migrations. Create a Postcres database named `driftt`. Then run the migrations:
 
 ```bash
-piccolo tester run
+piccolo migrations forwards driftt
+```
+
+If you want to try the Piccolo admin (kind of like the DJango admin), also run these migrations:
+
+```bash
+piccolo migrations forwards session_auth
+piccolo migrations forwards user
+```
+
+and create an administrative user:
+
+```bash
+piccolo user create
 ```
