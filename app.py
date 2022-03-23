@@ -8,9 +8,12 @@ from piccolo.engine import engine_finder
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 
-from driftt.endpoints import HomeEndpoint
-from driftt.piccolo_app import APP_CONFIG
-from driftt.tables import DrifttUser
+from utilities import now_utc
+
+
+from yolodex.endpoints import HomeEndpoint
+from yolodex.piccolo_app import APP_CONFIG
+from yolodex.tables import Contact
 
 
 app = FastAPI(
@@ -29,45 +32,51 @@ app = FastAPI(
 )
 
 
-DrifttUserIn: t.Any = create_pydantic_model(table=DrifttUser, model_name="DrifttUserIn")
-DrifttUserOut: t.Any = create_pydantic_model(
-    table=DrifttUser, include_default_columns=True, model_name="DrifttUserOut"
+ContactIn: t.Any = create_pydantic_model(table=Contact, model_name="ContactIn")
+ContactOut: t.Any = create_pydantic_model(
+    table=Contact, include_default_columns=True, model_name="ContactOut"
 )
 
 
-@app.get("/users/", response_model=t.List[DrifttUserOut])
-async def users():
-    return await DrifttUser.select().order_by(DrifttUser.id)
+@app.get("/contacts/", response_model=t.List[ContactOut])
+async def contacts():
+    return await Contact.select().order_by(Contact.id)
 
 
-@app.post("/users/", response_model=DrifttUserOut)
-async def create_user(user_model: DrifttUserIn):
-    user = DrifttUser(**user_model.dict())
-    await user.save()
-    return user.to_dict()
+@app.post("/contacts/", response_model=ContactOut)
+async def create_contact(contact_model: ContactIn):
+    
+    contact_model_dict = contact_model.dict()
+
+    # contact_model_dict['last_modified'] = now_utc()
+
+    contact = Contact(**contact_model.dict())
+
+    await contact.save()
+    return contact.to_dict()
 
 
-@app.put("/users/{user_id}/", response_model=DrifttUserOut)
-async def update_user(user_id: int, user_model: DrifttUserIn):
-    user = await User.objects().get(DrifttUser.id == user_id)
-    if not user:
+@app.put("/contacts/{contact_id}/", response_model=ContactOut)
+async def update_contact(contact_id: int, contact_model: ContactIn):
+    contact = await Contact.objects().get(Contact.id == contact_id)
+    if not contact:
         return JSONResponse({}, status_code=404)
 
-    for key, value in user_modell.dict().items():
-        setattr(user, key, value)
+    for key, value in contact_model.dict().items():
+        setattr(contact, key, value)
 
-    await user.save()
+    await contact.save()
 
-    return user.to_dict()
+    return contact.to_dict()
 
 
-@app.delete("/users/{user_id}/")
-async def delete_user(user_id: int):
-    user = await DrifttUser.objects().get(DrifttUser.id == user_id)
-    if not user:
+@app.delete("/contacts/{contact_id}/")
+async def delete_contact(contact_id: int):
+    contact = await Contact.objects().get(Contact.id == contact_id)
+    if not contact:
         return JSONResponse({}, status_code=404)
 
-    await user.remove()
+    await contact.remove()
 
     return JSONResponse({})
 

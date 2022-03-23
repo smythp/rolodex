@@ -5,14 +5,14 @@ from piccolo.conf.apps import AppRegistry
 
 DB = PostgresEngine(
     config={
-        "database": "driftt",
-        "user": "driftt_admin",
-        "password": "superdh",
+        "database": "yolodex",
+        "user": "yolodex",
+        "password": "makecontacts",
         "host": "localhost",
         "port": 5432,
     }
 )
 
 APP_REGISTRY = AppRegistry(
-    apps=["driftt.piccolo_app", "piccolo_admin.piccolo_app"]
+    apps=["yolodex.piccolo_app", "piccolo_admin.piccolo_app"]
 )

@@ -4,7 +4,7 @@ the APP_CONFIG.
 """
 
 from .tables import (
-    DrifttUser
+    Contact
 )
 
 import os
@@ -16,12 +16,12 @@ CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 
 APP_CONFIG = AppConfig(
-    app_name="driftt",
+    app_name="yolodex",
     migrations_folder_path=os.path.join(
         CURRENT_DIRECTORY, "piccolo_migrations"
     ),
-    table_classes=[DrifttUser],
-    # table_classes=table_finder(modules=["driftt.tables"], exclude_imported=True),
+    table_classes=[Contact],
+    # table_classes=table_finder(modules=["yolodex.tables"], exclude_imported=True),
     migration_dependencies=[],
     commands=[],
 )
