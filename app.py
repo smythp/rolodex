@@ -1,9 +1,11 @@
+from pydantic import BaseModel
+import enum
+
 import typing as t
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from piccolo_admin.endpoints import create_admin
-from piccolo_api.crud.serializers import create_pydantic_model
 from piccolo.engine import engine_finder
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
@@ -13,7 +15,13 @@ from utilities import now_utc
 
 from yolodex.endpoints import HomeEndpoint
 from yolodex.piccolo_app import APP_CONFIG
-from yolodex.tables import Contact
+
+
+from yolodex.tables import Contact, Relationship
+
+
+from models import RelationshipIn, RelationshipOut, ContactIn, ContactOut
+
 
 
 app = FastAPI(
@@ -31,11 +39,6 @@ app = FastAPI(
     ],
 )
 
-
-ContactIn: t.Any = create_pydantic_model(table=Contact, model_name="ContactIn")
-ContactOut: t.Any = create_pydantic_model(
-    table=Contact, include_default_columns=True, model_name="ContactOut"
-)
 
 
 @app.get("/contacts/", response_model=t.List[ContactOut])
@@ -79,6 +82,27 @@ async def delete_contact(contact_id: int):
     await contact.remove()
 
     return JSONResponse({})
+
+
+#####
+
+@app.get("/relationships/", response_model=t.List[RelationshipOut])
+async def relationships():
+    return await Relationship.select().order_by(Relationship.id)
+
+
+@app.post("/relationships/", response_model=RelationshipOut)
+async def create_relationship(relationship_model: RelationshipIn):
+    # relationship_model_dict = relationship_model.dict()
+    # relationship_model_dict['last_modified'] = now_utc()
+
+    relationship = Relationship(**relationship_model.dict())
+
+    await relationship.save()
+    return relationship.to_dict()
+
+
+
 
 
 @app.on_event("startup")

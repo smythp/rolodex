@@ -3,9 +3,9 @@ Import all of the Tables subclasses in your app here, and register them with
 the APP_CONFIG.
 """
 
-from .tables import (
-    Contact
-)
+# from .tables import (
+#     Contact
+# )
 
 import os
 
@@ -20,8 +20,8 @@ APP_CONFIG = AppConfig(
     migrations_folder_path=os.path.join(
         CURRENT_DIRECTORY, "piccolo_migrations"
     ),
-    table_classes=[Contact],
-    # table_classes=table_finder(modules=["yolodex.tables"], exclude_imported=True),
+    # table_classes=[Contact],
+    table_classes=table_finder(modules=["yolodex.tables"], exclude_imported=True),
     migration_dependencies=[],
     commands=[],
 )
