@@ -103,6 +103,30 @@ async def create_relationship(relationship_model: RelationshipIn):
 
 
 
+@app.put("/relationships/{contact_id}/", response_model=RelationshipOut)
+async def update_relationship(relationship_id: int, relationship_model: RelationshipIn):
+    relationship = await Relationship.objects().get(Relationship.id == relationship_id)
+    if not relationship:
+        return JSONResponse({}, status_code=404)
+
+    for key, value in relationship_model.dict().items():
+        setattr(relationship, key, value)
+
+    await relationship.save()
+
+    return relationship.to_dict()
+
+
+
+@app.delete("/relationships/{relationship_id}/")
+async def delete_relationship(relationship_id: int):
+    relationship = await Relationship.objects().get(Relationship.id == relationship_id)
+    if not relationship:
+        return JSONResponse({}, status_code=404)
+
+    await relationship.remove()
+
+    return JSONResponse({})
 
 
 @app.on_event("startup")
